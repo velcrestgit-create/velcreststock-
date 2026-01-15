@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velcrest Stock</title>
+    <style>
+        body { font-family: -apple-system, sans-serif; padding: 20px; text-align: center; background: #f4f4f4; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        select { width: 100%; padding: 15px; font-size: 16px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ddd; }
+        .row { display: flex; gap: 10px; }
+        button { flex: 1; padding: 20px; font-size: 18px; border: none; border-radius: 8px; color: white; cursor: pointer; font-weight: bold; }
+        .btn-in { background-color: #34c759; } /* Green */
+        .btn-out { background-color: #ff3b30; } /* Red */
+        #status { margin-top: 20px; font-weight: bold; color: #555; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Velcrest Stock</h2>
+        
+        <select id="item">
+            <option value="Chlorine 5kg">Chlorine 5kg</option>
+            <option value="Pool Acid">Pool Acid</option>
+            <option value="Sand Filter">Sand Filter</option>
+            <option value="Pool Pump 0.75kW">Pool Pump 0.75kW</option>
+        </select>
+
+        <div class="row">
+            <button class="btn-in" onclick="adjust(1)">+ STOCK IN</button>
+            <button class="btn-out" onclick="adjust(-1)">- USED</button>
+        </div>
+        
+        <p id="status">Ready...</p>
+    </div>
+
+    <script>
+        async function adjust(direction) {
+            const name = document.getElementById('item').value;
+            const status = document.getElementById('status');
+            
+            status.innerText = "⏳ Updating Zoho...";
+            status.style.color = "orange";
+
+            try {
+                // Calls the hidden backend function
+                const response = await fetch('/.netlify/functions/stock', {
+                    method: 'POST',
+                    body: JSON.stringify({ itemName: name, quantity: direction })
+                });
+                
+                const data = await response.text();
+                status.innerText = "✅ " + data;
+                status.style.color = "green";
+            } catch (error) {
+                status.innerText = "❌ Error. Try again.";
+                status.style.color = "red";
+            }
+        }
+    </script>
+</body>
+</html>
